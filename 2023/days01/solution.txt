@@ -1,0 +1,4 @@
+partie 1:
+test2.txt: 55834
+
+partie 2:

@@ -1,0 +1,5 @@
+game(1,[[cube(3,blue),cube(4,red)],[cube(1,red),cube(2,green),cube(6,blue)],[cube(2,green)]])
+game(2,[[cube(1,blue),cube(2,green)],[cube(3,green),cube(4,blue),cube(1,red)],[cube(1,green),cube(1,blue)]])
+game(3,[[cube(8,green),cube(6,blue),cube(20,red)],[cube(5,blue),cube(4,red),cube(13,green)],[cube(5,green),cube(1,red)]])
+game(4,[[cube(1,green),cube(3,red),cube(6,blue)],[cube(3,green),cube(6,red)],[cube(3,green),cube(15,blue),cube(14,red)]])
+game(5,[[cube(6,red),cube(1,blue),cube(3,green)],[cube(2,blue),cube(1,red),cube(2,green)]])
