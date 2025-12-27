@@ -3,7 +3,6 @@ use std::io::{self, BufRead};
 use std::path::Path;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
-use std::thread;
 
 #[derive(Debug)]
 struct Action {
@@ -113,13 +112,15 @@ fn soustrait(valeur: i32, nb_soustrait: i32) -> (i32, i32) {
     let mut valeur2 = valeur;
     if valeur == 0 {
         nb_zero = nb_soustrait / 100;
+        // n2 = n2 % 100;
         while n2 < 0 {
             n2 += 100;
         }
     } else if n2 < 0 {
         let mut n0 = valeur;
         let mut premier = true;
-        nb_zero = 1 + nb_soustrait / 100;
+        nb_zero = 1 + (nb_soustrait / 100);
+        // n2 = n2 % 100;
         while n2 < 0 {
             // if !(premier && valeur == 0) {
             //     nb_zero += 1;
@@ -128,11 +129,26 @@ fn soustrait(valeur: i32, nb_soustrait: i32) -> (i32, i32) {
             n0 = n2;
             premier = false;
         }
+        if n2==0 {
+            nb_zero += 1;
+        }
     } else if n2 == 0 {
         nb_zero += 1;
     }
     valeur2 = n2;
     return (valeur2, nb_zero);
+}
+
+fn calcul_modulo(n:i32,diviseur:i32) -> i32{
+    let mut n2=n;
+    while n2<0 || n2>=diviseur {
+        if n2>=diviseur{
+            n2-=diviseur;
+        } else if n2<0 {
+            n2+=diviseur;
+        }
+    }
+    return n2;
 }
 
 fn read_file_bis_old(filename: &str) -> i32 {
@@ -141,13 +157,11 @@ fn read_file_bis_old(filename: &str) -> i32 {
         // Consumes the iterator, returns an (Optional) String
         let mut valeur = 50;
         let mut nb_zero = 0;
-        let mut modifier_sans_zero = false;
 
         println!("valeur initiale: {}", valeur);
 
         for line in lines.map_while(Result::ok) {
             println!("{}", line);
-            modifier_sans_zero = false;
             if line.starts_with("R") {
                 let n = &line[1..].parse::<i32>().unwrap();
                 println!("right: {}", n);
@@ -229,9 +243,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use rstest::rstest;
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
+    use rstest::rstest;
 
     #[test]
     fn test_read_file_exemple() {
@@ -300,5 +314,19 @@ mod tests {
             soustrait(valeur, valeur_soustrait),
             (valeur_resultat, nb_zero)
         );
+    }
+
+    #[test]
+    fn test_calcul_modulo() {
+        assert_eq!(calcul_modulo(50, 100), 50);
+        assert_eq!(calcul_modulo(150, 100), 50);
+        assert_eq!(calcul_modulo(10, 100), 10);
+        assert_eq!(calcul_modulo(-10, 100), 90);
+        assert_eq!(calcul_modulo(0, 100), 0);
+        assert_eq!(calcul_modulo(99, 100), 99);
+        assert_eq!(calcul_modulo(100, 100), 0);
+        assert_eq!(calcul_modulo(101, 100), 1);
+        assert_eq!(calcul_modulo(-1, 100), 99);
+        assert_eq!(calcul_modulo(-2, 100), 98);
     }
 }
