@@ -5,6 +5,12 @@ use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 
+#[derive(Debug)]
+struct Action {
+    valeur: i32,
+    valeur_ajoute: i32,
+}
+
 fn main() {
     let res: i32;
     //res = read_file("./test1.txt");
@@ -105,7 +111,12 @@ fn soustrait(valeur: i32, nb_soustrait: i32) -> (i32, i32) {
     let mut n2 = valeur - nb_soustrait;
     let mut nb_zero = 0;
     let mut valeur2 = valeur;
-    if n2 < 0 {
+    if valeur == 0 {
+        nb_zero = nb_soustrait / 100;
+        while n2 < 0 {
+            n2 += 100;
+        }
+    } else if n2 < 0 {
         let mut n0 = valeur;
         let mut premier = true;
         nb_zero = 1 + nb_soustrait / 100;
@@ -239,15 +250,15 @@ mod tests {
 
     #[test]
     fn test_read_file_bis_input() {
-        assert_eq!(read_file_bis("./input.txt"), 6500);
+        assert_eq!(read_file_bis("./input.txt"), 6322);
     }
 
     #[test]
     fn test_read_file_bis_test1() {
-        // assert_eq!(read_file_bis("./test_files/test1_1.txt"), 1);
-        // assert_eq!(read_file_bis("./test_files/test2_1.txt"), 1);
-        // assert_eq!(read_file_bis("./test_files/test3_1.txt"), 1);
-        // assert_eq!(read_file_bis("./test_files/test4_1.txt"), 1);
+        assert_eq!(read_file_bis("./test_files/test1_1.txt"), 1);
+        assert_eq!(read_file_bis("./test_files/test2_1.txt"), 1);
+        assert_eq!(read_file_bis("./test_files/test3_1.txt"), 1);
+        assert_eq!(read_file_bis("./test_files/test4_1.txt"), 1);
 
         assert_eq!(read_file_bis("./test_files/test1_2.txt"), 2);
         assert_eq!(read_file_bis("./test_files/test2_2.txt"), 2);
