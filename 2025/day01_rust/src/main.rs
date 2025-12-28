@@ -101,54 +101,112 @@ fn calcul(rx: Receiver<i32>) -> i32 {
 }
 
 fn ajout(valeur: i32, nb_ajout: i32) -> (i32, i32) {
-    let nb_zero = (valeur + nb_ajout) / 100;
-    let valeur2 = (valeur + nb_ajout) % 100;
-    return (valeur2, nb_zero);
+    if true {
+        return calcul_suite(valeur, nb_ajout);
+    } else {
+        let nb_zero = (valeur + nb_ajout) / 100;
+        let valeur2 = (valeur + nb_ajout) % 100;
+        return (valeur2, nb_zero);
+    }
 }
 
 fn soustrait(valeur: i32, nb_soustrait: i32) -> (i32, i32) {
-    let mut n2 = valeur - nb_soustrait;
-    let mut nb_zero = 0;
-    let mut valeur2 = valeur;
-    if valeur == 0 {
-        nb_zero = nb_soustrait / 100;
-        // n2 = n2 % 100;
-        while n2 < 0 {
-            n2 += 100;
-        }
-    } else if n2 < 0 {
-        let mut n0 = valeur;
-        let mut premier = true;
-        nb_zero = 1 + (nb_soustrait / 100);
-        // n2 = n2 % 100;
-        while n2 < 0 {
-            // if !(premier && valeur == 0) {
-            //     nb_zero += 1;
-            // }
-            n2 += 100;
-            n0 = n2;
-            premier = false;
-        }
-        if n2==0 {
+    if true {
+        return calcul_suite(valeur, -nb_soustrait);
+    } else {
+        let mut n2 = valeur - nb_soustrait;
+        let mut nb_zero = 0;
+        let mut valeur2 = valeur;
+        if valeur == 0 {
+            nb_zero = nb_soustrait / 100;
+            // n2 = n2 % 100;
+            while n2 < 0 {
+                n2 += 100;
+            }
+        } else if n2 < 0 {
+            let mut n0 = valeur;
+            let mut premier = true;
+            nb_zero = 1 + (nb_soustrait / 100);
+            // n2 = n2 % 100;
+            while n2 < 0 {
+                // if !(premier && valeur == 0) {
+                //     nb_zero += 1;
+                // }
+                n2 += 100;
+                n0 = n2;
+                premier = false;
+            }
+            if n2 == 0 {
+                nb_zero += 1;
+            }
+        } else if n2 == 0 {
             nb_zero += 1;
         }
-    } else if n2 == 0 {
-        nb_zero += 1;
+        valeur2 = n2;
+        return (valeur2, nb_zero);
     }
-    valeur2 = n2;
-    return (valeur2, nb_zero);
 }
 
-fn calcul_modulo(n:i32,diviseur:i32) -> i32{
-    let mut n2=n;
-    while n2<0 || n2>=diviseur {
-        if n2>=diviseur{
-            n2-=diviseur;
-        } else if n2<0 {
-            n2+=diviseur;
+fn calcul_modulo(n: i32, diviseur: i32) -> i32 {
+    let mut n2 = n;
+    while n2 < 0 || n2 >= diviseur {
+        if n2 >= diviseur {
+            n2 -= diviseur;
+        } else if n2 < 0 {
+            n2 += diviseur;
         }
     }
     return n2;
+}
+
+fn calcul_suite(valeur_initiale: i32, valeur_ajoute: i32) -> (i32, i32) {
+
+    let mut n2=valeur_initiale;
+    let mut nb_zero = 0;
+    let mut valeur_corrigee = n2;
+    let valeur_ajoute_abs= valeur_ajoute.abs();
+
+    for n in 1..=valeur_ajoute_abs{
+
+        if valeur_ajoute>=0{
+            valeur_corrigee=(valeur_corrigee+1)%100;
+        } else {
+            valeur_corrigee=(valeur_corrigee-1+100)%100;
+        }
+
+        if valeur_corrigee==0{
+            nb_zero+=1;
+        }
+    }
+
+    return (valeur_corrigee, nb_zero);
+}
+
+fn calcul_suite2(valeur_initiale: i32, valeur_ajoute: i32) -> (i32, i32) {
+    let mut n2 = valeur_initiale + valeur_ajoute;
+    let mut nb_zero = 0;
+    let mut valeur_corrigee = n2;
+    let diviseur = 100;
+
+    if valeur_corrigee < 0 || valeur_corrigee >= diviseur {
+        while valeur_corrigee < 0 || valeur_corrigee >= diviseur {
+            if valeur_corrigee >= diviseur {
+                valeur_corrigee -= diviseur;
+            } else if valeur_corrigee < 0 {
+                valeur_corrigee += diviseur;
+            }
+            nb_zero += 1
+        }
+        if valeur_initiale == 0 && nb_zero > 0 {
+            nb_zero -= 1;
+        } else if valeur_corrigee == 0 && valeur_ajoute < 0 {
+            nb_zero += 1
+        }
+    } else if valeur_corrigee == 0 {
+        nb_zero += 1
+    }
+
+    return (valeur_corrigee, nb_zero);
 }
 
 fn read_file_bis_old(filename: &str) -> i32 {
@@ -264,7 +322,7 @@ mod tests {
 
     #[test]
     fn test_read_file_bis_input() {
-        assert_eq!(read_file_bis("./input.txt"), 6322);
+        assert_eq!(read_file_bis("./input.txt"), 6228);
     }
 
     #[test]
@@ -290,6 +348,28 @@ mod tests {
     }
 
     #[test]
+    fn test_ajout2() {
+        assert_eq!(ajout(98, 1), (99, 0));
+        assert_eq!(ajout(98, 2), (0, 1));
+        assert_eq!(ajout(98, 3), (1, 1));
+        assert_eq!(ajout(98, 4), (2, 1));
+        assert_eq!(ajout(98, 101), (99, 1));
+        assert_eq!(ajout(98, 102), (0, 2));
+        assert_eq!(ajout(98, 103), (1, 2));
+        assert_eq!(ajout(98, 104), (2, 2));
+        assert_eq!(ajout(98, 201), (99, 2));
+        assert_eq!(ajout(98, 202), (0, 3));
+        assert_eq!(ajout(98, 203), (1, 3));
+        assert_eq!(ajout(98, 204), (2, 3));
+        assert_eq!(ajout(98, 301), (99, 3));
+        assert_eq!(ajout(98, 302), (0, 4));
+        assert_eq!(ajout(98, 303), (1, 4));
+        assert_eq!(ajout(98, 304), (2, 4));
+        assert_eq!(ajout(0, 10), (10, 0));
+        assert_eq!(ajout(90, 10), (0, 1));
+    }
+
+    #[test]
     fn test_soustrait() {
         assert_eq!(soustrait(50, 35), (15, 0));
         assert_eq!(soustrait(50, 68), (82, 1));
@@ -299,6 +379,31 @@ mod tests {
         assert_eq!(soustrait(0, 1), (99, 0));
         assert_eq!(soustrait(99, 99), (0, 1));
         assert_eq!(soustrait(14, 82), (32, 1));
+    }
+
+    #[test]
+    fn test_soustrait3() {
+        assert_eq!(soustrait(3, 1), (2, 0));
+        assert_eq!(soustrait(3, 2), (1, 0));
+        assert_eq!(soustrait(3, 3), (0, 1));
+        assert_eq!(soustrait(3, 4), (99, 1));
+        assert_eq!(soustrait(3, 5), (98, 1));
+        assert_eq!(soustrait(3, 101), (2, 1));
+        assert_eq!(soustrait(3, 102), (1, 1));
+        assert_eq!(soustrait(3, 103), (0, 2));
+        assert_eq!(soustrait(3, 104), (99, 2));
+        assert_eq!(soustrait(3, 105), (98, 2));
+        assert_eq!(soustrait(3, 201), (2, 2));
+        assert_eq!(soustrait(3, 202), (1, 2));
+        assert_eq!(soustrait(3, 203), (0, 3));
+        assert_eq!(soustrait(3, 204), (99, 3));
+        assert_eq!(soustrait(3, 205), (98, 3));
+        assert_eq!(soustrait(3, 301), (2, 3));
+        assert_eq!(soustrait(3, 302), (1, 3));
+        assert_eq!(soustrait(3, 303), (0, 4));
+        assert_eq!(soustrait(3, 304), (99, 4));
+        assert_eq!(soustrait(3, 305), (98, 4));
+        assert_eq!(soustrait(0, 10), (90, 0));
     }
 
     #[rstest]
