@@ -16,7 +16,8 @@ struct Interval {
 fn main() {
     //partie1("test1.txt");
     //partie1("input.txt");
-    partie2("test1.txt");
+    //partie2("test1.txt");
+    partie2("input.txt");
 }
 
 fn partie2(filename: &str) -> i64 {
@@ -42,18 +43,27 @@ fn calcul2(rx: Receiver<Interval>) -> i64 {
 
         println!("verification pour: {} - {}", debut_str, fin_str);
 
-        for i in len_min..=len_max {
-            if i % 2 == 0 {
-                let i0 = i / 2;
+        // for taille_nombre in len_min..=len_max {
+        //     if taille_nombre % 2 == 0 {
+        //         let taille_doublons = taille_nombre / 2;
+        //
+        //         for nb_doublons in 1..=taille_doublons {
+        //             // if debut_str.len() ==fin_str.len() && nb_doublons>fin_str.len() {
+        //             //     continue;
+        //             // }
+        //             if taille_doublons*nb_doublons!=taille_nombre{
+        //                 continue;
+        //             }
+        //             liste_nombres(debut, fin, taille_nombre, taille_doublons, nb_doublons as u64, &tx2);
+        //         }
+        //
+        //         //liste_nombres(debut, fin, i, i0, 2, &tx2);
+        //     }
+        // }
 
-                for j in 1..=i0 {
-                    liste_nombres(debut, fin, i, i0, j as u64, &tx2);
-                }
-
-                //liste_nombres(debut, fin, i, i0, 2, &tx2);
-            }
-        }
+        liste_nombres2(debut, fin, len_min, len_max, &tx2);
     }
+
     drop(tx2);
 
     let mut resultat = 0;
@@ -68,25 +78,65 @@ fn calcul2(rx: Receiver<Interval>) -> i64 {
     return resultat;
 }
 
-fn liste_nombres(debut: i64, fin: i64, i: usize, i0: usize, nb: u64, tx: &Sender<i64>) {
-    let n = 10i64.checked_pow((i0 - 1) as u32).unwrap();
-    let n_max = 10i64.checked_pow((i0) as u32).unwrap() - 1;
-    let n3 = 10i64.checked_pow((i0) as u32).unwrap();
+fn liste_nombres2(debut: i64, fin: i64, len_min: usize, len_max: usize, tx: &Sender<i64>) {
+    for taille_nombre in len_min..=len_max {
+        for diviseur in 2..=taille_nombre {
+            if taille_nombre % diviseur == 0 {
+                let taille_doublons = taille_nombre / diviseur;
 
-    println!("i: {} ({}), n:{}, n_max: {}", i, i0, n, n_max);
+                for nb_doublons in 1..=taille_nombre {
+                    // if debut_str.len() ==fin_str.len() && nb_doublons>fin_str.len() {
+                    //     continue;
+                    // }
+                    if taille_doublons * nb_doublons != taille_nombre {
+                        continue;
+                    }
+                    liste_nombres(
+                        debut,
+                        fin,
+                        taille_nombre,
+                        taille_doublons,
+                        nb_doublons as u64,
+                        &tx,
+                    );
+                }
+
+                //liste_nombres(debut, fin, i, i0, 2, &tx2);
+            }
+        }
+    }
+}
+
+fn liste_nombres(
+    debut: i64,
+    fin: i64,
+    taille_nombre: usize,
+    taille_doublons: usize,
+    nb_doublons: u64,
+    tx: &Sender<i64>,
+) {
+    let n = 10i64.checked_pow((taille_doublons - 1) as u32).unwrap();
+    let n_max = 10i64.checked_pow((taille_doublons) as u32).unwrap() - 1;
+    let n3 = 10i64.checked_pow((taille_doublons) as u32).unwrap();
+
+    println!(
+        "i: {} ({}), n:{}, n_max: {}",
+        taille_nombre, taille_doublons, n, n_max
+    );
 
     let mut resultat = 0i64;
     for n02 in n..=n_max {
         let mut n2 = n02;
-        let s5=n02.to_string();
-        let mut s6=String::new();
+        let s5 = n02.to_string();
+        let mut s6 = String::new();
         //println!("test0 de: {} ({}), {}, {}",n2, n, n02,nb);
-        for k in 0..nb {
+
+        for k in 0..nb_doublons {
             //n2 = n2 * n3 + n02;
             s6 = s6 + s5.as_str();
         }
-        //println!("test de: {} ({}), {}, '{}', {}",n2, n, n02,s6, nb);
-        n2=s6.parse::<i64>().unwrap();
+        //println!("test de: {} ({}), {}, '{}', {}, {}, {}",n2, n, n02,s6, nb_doublons, debut, fin);
+        n2 = s6.parse::<i64>().unwrap();
         //println!("test de: {} ({})",n2, n);
         if n2 >= debut && n2 <= fin {
             println!("id invalide: {}", n2);
@@ -203,11 +253,40 @@ mod tests {
 
     #[test]
     fn test_partie2_exemple() {
-        assert_eq!(partie2("./test1.txt"), 1227775554i64);
+        assert_eq!(partie2("./test1.txt"), 4174379265i64);
     }
 
     #[test]
     fn test_partie2_input() {
-        assert_eq!(partie2("./input.txt"), 29940924880i64);
+        assert_eq!(partie2("./input.txt"), 48631958998i64);
+    }
+
+    #[test]
+    fn test_partie2_liste_nombres2() {
+        let resultat = test_liste_nombres2(11, 22);
+        assert_eq!(resultat.len(), 2);
+        assert_eq!(resultat[0], 11);
+        assert_eq!(resultat[1], 22);
+    }
+
+    #[test]
+    fn test_partie2_liste_nombres2_bis() {
+        let resultat = test_liste_nombres2(95, 115);
+        assert_eq!(resultat.len(), 2);
+        assert_eq!(resultat[0], 99);
+        assert_eq!(resultat[1], 111);
+    }
+
+    fn test_liste_nombres2(debut: i64, fin: i64) -> Vec<i64> {
+        let len_min = debut.to_string().len();
+        let len_max = fin.to_string().len();
+        let (tx, rx) = mpsc::channel();
+        liste_nombres2(debut, fin, len_min, len_max, &tx);
+        drop(tx);
+        let mut resultat = vec![];
+        for valeur in rx {
+            resultat.push(valeur);
+        }
+        return resultat;
     }
 }
